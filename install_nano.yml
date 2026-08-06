@@ -1,0 +1,21 @@
+---
+all:
+  vars:
+    ansible_ssh_common_args: '-o "SetEnv TERM=dumb"'
+
+- hosts: all
+  become: true
+  tasks:
+
+  
+  - name: update repository index
+    ansible.builtin.dnf:
+      update_cache: yes
+    when: ansible_distribution == "Fedora"
+
+  - name: install nano package 
+    ansible.builtin.dnf: 
+      name: nano
+      state: latest  
+    when: ansible_distribution == "Fedora"
+
