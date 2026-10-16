@@ -36,6 +36,13 @@
     when: ansible_distribution == "Rocky" or ansible_distribution == "Fedora"
 
 
+  - name: ensure apache is running (Ubuntu)
+    tags: apache,ubuntu
+    ansible.builtin.service:
+      name: apache2
+      state: started
+    when: ansible_distribution == "Ubuntu"  
+
   - name: ensure apache is running (Rocky)
     tags: apache,rocky
     ansible.builtin.service:
@@ -43,6 +50,14 @@
       state: started
     when: ansible_distribution == "Rocky"  
 
+  - name: change email address for admin
+    tags: apache,rocky
+    ansible.builtin.lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      regexp: '^ServerAdmin'
+      line: ServerAdmin somebody@somehow.net
+    when: ansible_ditribution == "Rocky" or ansible_distribution == "Fedora"
+    register: httpd  
 
   - name: copy html file for site
     tags: apache,ubuntu
