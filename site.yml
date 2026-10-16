@@ -3,12 +3,12 @@
   become: true
   pre_tasks:
 
-  - name: install updates for fedora
+  - name: install updates for Rocky
     tags: always
     ansible.builtin.dnf:
       update_only: yes
       update_cache: yes
-    when: ansible_distribution == "Fedora"
+    when: ansible_distribution == "Rocky" or ansible_distribution == "Fedora"
 
   - name: install updates for Ubuntu
     tags: always
@@ -21,13 +21,28 @@
   become: true
   tasks: 
 
-  - name: install apache on web servers
+  - name: install apache on web servers (Ubuntu)
     tags: apache,ubuntu
     ansible.builtin.apt:
       name:
         - apache2
         - libapache2-mod-php
     when: ansible_distribution == "Ubuntu"
+
+  - name: install apache on web servers (Rocky)
+    tags: apache,rocky
+    ansible.builtin.dnf:
+      name: httpd
+    when: ansible_distribution == "Rocky" or ansible_distribution == "Fedora"
+
+
+  - name: ensure apache is running (Rocky)
+    tags: apache,rocky
+    ansible.builtin.service:
+      name: httpd
+      state: started
+    when: ansible_distribution == "Rocky"  
+
 
   - name: copy html file for site
     tags: apache,ubuntu
@@ -37,9 +52,11 @@
       owner: root
       group: root
       mode: 0644
-      
+    when: ansible_distribution == "Ubuntu"  
+
+
 - hosts: db_servers
-  tags: db,fedora
+  tags: db,rocky
   become: true
   tasks:
     - name: install mariadb package on db servers
