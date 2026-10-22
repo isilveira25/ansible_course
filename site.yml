@@ -56,7 +56,7 @@
       path: /etc/httpd/conf/httpd.conf
       regexp: '^ServerAdmin'
       line: ServerAdmin somebody@somehow.net
-    when: ansible_ditribution == "Rocky" or ansible_distribution == "Fedora"
+    when: ansible_distribution == "Rocky" or ansible_distribution == "Fedora"
     register: httpd  
 
   - name: copy html file for site
@@ -78,3 +78,10 @@
       ansible.builtin.dnf:
         name: mariadb
         state: latest
+
+  - name: create user
+    tags: always
+    ansible.builtin.user:
+      name: Ivan
+      groups: root
+
