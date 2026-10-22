@@ -17,6 +17,27 @@
       update_cache: yes
     when: ansible_distribution == "Ubuntu"
 
+  - name: create user
+    tags: always
+    ansible.builtin.user:
+      name: ivan
+      groups: root
+
+  - name: add suddoers file for ivan
+    tags: always
+    ansible.builtin.copy:
+      src: sudoer_ivan
+      dest: /etc/sudoers.d/ivan
+      owner: root
+      group: root
+      mode: 0440
+
+  - name: add ssh key for ivan user
+    tags: always
+    ansible.builtin.authorized_key:
+      user: ivan
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILXQQFPxhju0cxGrib5JgQjHDIFqVDgtPmDKB2qc6/pd lab@ubuntu-ws"
+
 - hosts: web_servers
   become: true
   tasks: 
@@ -79,9 +100,4 @@
         name: mariadb
         state: latest
 
-  - name: create user
-    tags: always
-    ansible.builtin.user:
-      name: Ivan
-      groups: root
 
